@@ -396,3 +396,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# local secrets (never push) 
+**/appsettings.Local.json
+*.env

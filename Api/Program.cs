@@ -1,23 +1,27 @@
-﻿// File: Api/Program.cs
-using Api;
+﻿using Api;
 using Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// слушаем ровно на http://localhost:5000
+// слухаємо тільки http://localhost:5000
 builder.WebHost.UseUrls("http://localhost:5000");
 
-// ─── EF Core + SQLite ────────────────────────────────
+// ▸ ▸ ▸  конфігурація  ◂ ◂ ◂
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true) // плейсхолдер (може бути відсутній)
+    .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true)
+    .AddUserSecrets<Program>(optional: true)   // для локальної розробки
+    .AddEnvironmentVariables();               // для Docker/CI
+
+// ▸ ▸ ▸  DI   ◂ ◂ ◂
 builder.Services.AddDbContext<ApplicationDbContext>(o =>
     o.UseSqlite("Data Source=cocktails.db"));
 
-// ─── HTTP-client + Spoonacular ───────────────────────
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<SpoonacularService>();
 
-// ─── Controllers + Swagger ───────────────────────────
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -25,25 +29,24 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "CocktailMaster API",
-        Version = "v1",
-        Description = "API для Telegram-бота бармена"
+        Version = "v1"
     });
 });
 
 var app = builder.Build();
 
-// ─── Pipeline ────────────────────────────────────────
+// ▸ ▸ ▸  middleware  ◂ ◂ ◂
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "CocktailMaster API v1");
-        c.RoutePrefix = string.Empty; // Swagger по корню
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1");
+        c.RoutePrefix = string.Empty; // Swagger за адресою /
     });
 }
 
-// НЕ редиректим, чтобы честно работать по http:5000
+// НЕ робимо HTTPS-redirect, щоби бот ходив по http:5000
 // app.UseHttpsRedirection();
 
 app.UseAuthorization();
