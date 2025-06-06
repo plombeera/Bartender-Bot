@@ -28,7 +28,7 @@ public class CocktailsController : ControllerBase
         var ext = await _spoon.GetRandomAsync();
         if (ext is null) return Problem("Spoonacular error");
 
-        // èùåì èëè äîáàâëÿåì êîêòåéëü
+        // Ã¨Ã¹Ã¥Ã¬ Ã¨Ã«Ã¨ Ã¤Ã®Ã¡Ã Ã¢Ã«Ã¿Ã¥Ã¬ ÃªÃ®ÃªÃ²Ã¥Ã©Ã«Ã¼
         var cocktail = await _db.Cocktails
             .FirstOrDefaultAsync(c => c.ExternalId == ext.id)
             ?? new Cocktail
@@ -45,12 +45,15 @@ public class CocktailsController : ControllerBase
             await _db.SaveChangesAsync();
         }
 
-        // ïèøåì â èñòîðèþ
-        if (chatId.HasValue)
-        {
-            _db.Histories.Add(new History
-            {
-                ChatId = chatId.Value,
+                         .OrderByDescending(h => h.ViewedAt)
+                         .Select(h => h.CocktailId)
+                         .Take(limit)
+                         .ToListAsync();
+        var dict = await _db.Cocktails.Where(c => ids.Contains(c.Id))
+                             .ToDictionaryAsync(c => c.Id);
+
+        return ids.Select(id => dict[id]).ToList();
+        if (score is < 1 or > 5) return BadRequest("Score must be between 1 and 5");
                 CocktailId = cocktail.Id,
                 ViewedAt = DateTime.UtcNow
             });
@@ -84,7 +87,7 @@ public class CocktailsController : ControllerBase
         [FromBody] int score,
         [FromHeader(Name = "X-ChatId")] long XChatId)
     {
-        if (score is < 1 or > 5) return BadRequest("Score must be 1–5");
+        if (score is < 1 or > 5) return BadRequest("Score must be 1â€“5");
 
         _db.Ratings.Add(new Rating
         {
