@@ -42,7 +42,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1");
-        c.RoutePrefix = string.Empty; // Swagger за адресою /
+        //c.RoutePrefix = string.Empty; // Swagger за адресою /
     });
 }
 
