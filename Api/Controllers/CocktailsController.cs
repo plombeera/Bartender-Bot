@@ -134,7 +134,7 @@ public async Task<IEnumerable<RatedRow>> RatedTable(long chatId)
         {
             recipes = await _src.FilterByTagAsync(tag, limit);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             recipes = Array.Empty<CocktailDbService.ExtRecipe>();
         }

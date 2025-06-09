@@ -86,7 +86,7 @@ public sealed class BotService : BackgroundService
                 await Ask(chat, "Введите тег (например: Vodka, Classic, Tiki):", Await.Tag, ct);
                 return;
             }
-            if (t == "🥄 Ingredients") { await Ask(chat, "Enter one ingradient:", Await.Ing, ct); return; }
+            if (t == "🥄 Ingredients") { await Ask(chat, "Enter one ingredient:", Await.Ing, ct); return; }
             if (t == "🔀 Compare") { await Ask(chat, "First cocktail:", Await.CmpA, ct); return; }
 
             _wait.TryGetValue(chat, out var state);
