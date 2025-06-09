@@ -24,6 +24,7 @@ Host.CreateDefaultBuilder(args)
             var opts = sp.GetRequiredService<IOptions<BotOptions>>().Value;
             http.BaseAddress = new Uri(opts.ApiBaseUrl);          // http://localhost:5000
         });
+
         services.AddHostedService<BotService>();
     })
 

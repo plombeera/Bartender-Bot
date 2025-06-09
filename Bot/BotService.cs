@@ -1,4 +1,4 @@
-﻿// File: Bot/BotService.cs
+﻿
 using Ct = System.Threading.CancellationToken;
 using System;
 using System.Collections.Generic;
@@ -20,13 +20,10 @@ public sealed class BotService : BackgroundService
     private readonly ITelegramBotClient _bot;
     private readonly ApiClient _api;
     public BotService(ITelegramBotClient bot, ApiClient api) => (_bot, _api) = (bot, api);
-
-    /* ---------- state ---------- */
     private enum Await { None, Search, Tag, Ing, CmpA, CmpB }
     private readonly Dictionary<long, Await> _wait = new();
     private readonly Dictionary<long, string?> _cmpBuf = new();
 
-    /* ---------- main keyboard ---------- */
     private static readonly ReplyKeyboardMarkup KB = new(new[]
     {
         new KeyboardButton[] { new("🎲 Random"), new("📜 History"), new("⭐ Rated") },
@@ -37,12 +34,11 @@ public sealed class BotService : BackgroundService
 
     private static readonly Regex _html = new("<.*?>", RegexOptions.Compiled);
 
-    /* ---------- host entry ---------- */
     protected override Task ExecuteAsync(Ct stop)
     {
         var opts = new ReceiverOptions
         {
-            ThrowPendingUpdates = true      // ← discard updates queued while offline
+            ThrowPendingUpdates = true 
         };
 
         _bot.StartReceiving(OnUpdate, OnError, receiverOptions: opts, cancellationToken: stop);
@@ -69,7 +65,7 @@ public sealed class BotService : BackgroundService
         {
             if (t == "/start")
             {
-                await _bot.SendTextMessageAsync(chat, "*Bartender-Bot ready!*",
+                await _bot.SendTextMessageAsync(chat, "*darova!*",
                                                 parseMode: ParseMode.Markdown,
                                                 replyMarkup: KB,
                                                 cancellationToken: ct);
@@ -83,7 +79,7 @@ public sealed class BotService : BackgroundService
             if (t == "🔍 Search") { await Ask(chat, "Cocktail name:", Await.Search, ct); return; }
             if (t == "🧩 Tag")
             {
-                await Ask(chat, "Введите тег (например: Vodka, Classic, Tiki):", Await.Tag, ct);
+                await Ask(chat, "Enter tag (for example: Vodka, Classic, Bitter):", Await.Tag, ct);
                 return;
             }
             if (t == "🥄 Ingredients") { await Ask(chat, "Enter one ingradient:", Await.Ing, ct); return; }

@@ -175,6 +175,7 @@ public async Task<IEnumerable<RatedRow>> RatedTable(long chatId)
     public async Task<ActionResult<Cocktail>> Get(Guid id)
         => await _db.Cocktails.FindAsync(id) is { } c ? c : NotFound();
 
+    /* ───── helpers ───── */
     private async Task TrackAsync(Guid cocktailId, long? chatId)
     {
         if (chatId is null) return;
