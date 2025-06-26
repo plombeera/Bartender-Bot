@@ -10,14 +10,14 @@ using Microsoft.Extensions.Configuration;
 
 namespace Api.Services;
 
-public sealed class CocktailDbService
+public sealed class CocktailService
 {
     private readonly HttpClient _http;
 
-    public CocktailDbService(IConfiguration cfg, IHttpClientFactory fab)
+    public CocktailService(IConfiguration cfg, IHttpClientFactory fab)
     {
         var key = cfg["CocktailDB:ApiKey"] ?? "1";
-        _http = fab.CreateClient(nameof(CocktailDbService));
+        _http = fab.CreateClient(nameof(CocktailService));
         _http.BaseAddress = new($"https://www.thecocktaildb.com/api/json/v1/{key}/");
     }
 
@@ -58,7 +58,7 @@ public sealed class CocktailDbService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[CocktailDbService] Error in GetMany with url '{url}': {ex.Message}");
+            Console.WriteLine($"[CocktailService] Error in GetMany with url '{url}': {ex.Message}");
             return Array.Empty<ExtRecipe>();
         }
     }

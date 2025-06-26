@@ -14,7 +14,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(o =>
 
 builder.Services.AddHttpClient();
 
-builder.Services.AddSingleton<CocktailDbService>(); 
+builder.Services.AddSingleton<CocktailService>(); 
 builder.Services.AddSingleton<WikipediaService>();  
 
 builder.Services.AddEndpointsApiExplorer();

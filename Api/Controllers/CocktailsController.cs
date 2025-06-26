@@ -9,10 +9,10 @@ namespace Api.Controllers;
 public sealed class CocktailsController : ControllerBase
 {
     private readonly ApplicationDbContext _db;
-    private readonly CocktailDbService _src;
+    private readonly CocktailService _src;
     private readonly WikipediaService _wiki;
 
-    public CocktailsController(ApplicationDbContext db, CocktailDbService src, WikipediaService wiki)
+    public CocktailsController(ApplicationDbContext db, CocktailService src, WikipediaService wiki)
         => (_db, _src, _wiki) = (db, src, wiki);
 
     [HttpGet("random")]
@@ -129,14 +129,14 @@ public async Task<IEnumerable<RatedRow>> RatedTable(long chatId)
     [HttpGet("filter")]
     public async Task<IEnumerable<Cocktail>> Filter(string tag, int limit = 10)
     {
-        IEnumerable<CocktailDbService.ExtRecipe> recipes;
+        IEnumerable<CocktailService.ExtRecipe> recipes;
         try
         {
             recipes = await _src.FilterByTagAsync(tag, limit);
         }
         catch (Exception ex)
         {
-            recipes = Array.Empty<CocktailDbService.ExtRecipe>();
+            recipes = Array.Empty<CocktailService.ExtRecipe>();
         }
 
         if (!recipes.Any())
@@ -183,7 +183,7 @@ public async Task<IEnumerable<RatedRow>> RatedTable(long chatId)
         await _db.SaveChangesAsync();
     }
 
-    private async Task<Cocktail> EnsureAsync(CocktailDbService.ExtRecipe ext)
+    private async Task<Cocktail> EnsureAsync(CocktailService.ExtRecipe ext)
     {
         var existing = await _db.Cocktails.FirstOrDefaultAsync(c => c.ExternalId == ext.id);
         if (existing != null) return existing;
@@ -203,7 +203,7 @@ public async Task<IEnumerable<RatedRow>> RatedTable(long chatId)
         return c;
     }
 
-    private async Task<IEnumerable<Cocktail>> EnsureManyAsync(Task<IEnumerable<CocktailDbService.ExtRecipe>> src)
+    private async Task<IEnumerable<Cocktail>> EnsureManyAsync(Task<IEnumerable<CocktailService.ExtRecipe>> src)
     {
         var list = new List<Cocktail>();
         foreach (var ext in await src)

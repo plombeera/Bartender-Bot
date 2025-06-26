@@ -65,7 +65,7 @@ public sealed class BotService : BackgroundService
         {
             if (t == "/start")
             {
-                await _bot.SendTextMessageAsync(chat, "*darova!*",
+                await _bot.SendTextMessageAsync(chat, "*Welcome!*",
                                                 parseMode: ParseMode.Markdown,
                                                 replyMarkup: KB,
                                                 cancellationToken: ct);
